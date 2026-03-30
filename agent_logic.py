@@ -9,8 +9,22 @@ from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from openai import OpenAI
 from pydantic import BaseModel, Field
+from fastapi.middleware.cors import CORSMiddleware
 
 app = FastAPI(title="Kid Practice Backend", version="1.0.0")
+
+# Add this to allow your Vercel site to talk to Render
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"], # For now, allow all. We can tighten this later.
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+@app.get("/health")
+async def health_check():
+    return {"status": "ok"}
 
 # UPDATED: Allow both local testing and your Vercel URL
 app.add_middleware(
