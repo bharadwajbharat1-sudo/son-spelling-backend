@@ -62,23 +62,21 @@ async def health_check():
 
 @app.get("/generate")
 async def generate_dynamic_content(mode: str = "sentence", level: int = 1, topic: str = "anything"):
-    if not google_api_key:
-        raise HTTPException(status_code=500, detail="Backend not configured with GOOGLE_API_KEY")
-
-    # Architect's Note: Gemini uses a simpler prompt structure than OpenAI's 'messages'
+    # Updated Prompt: Force the AI to ONLY output the target text
     prompt = (
-        f"You are a fun, encouraging spelling tutor. "
-        f"Create a {mode} for a 12-year-old at difficulty level {level}/10. "
-        f"The topic must be about: {topic}. "
-        f"Keep it short, exciting, and clear for spelling practice."
+        f"You are a strict spelling data generator. "
+        f"Generate a {mode} about {topic} for a 12-year-old (Level {level}). "
+        f"IMPORTANT: Output ONLY the {mode} itself. Do not include introductory text, quotes, or explanations."
     )
 
     try:
         response = model.generate_content(prompt)
-        return {"text": response.text.strip()}
+        # Clean the text in case Gemini adds markdown or extra spaces
+        clean_text = response.text.strip().replace('"', '') 
+        return {"text": clean_text}
     except Exception as e:
         print(f"Gemini Error: {e}")
-        raise HTTPException(status_code=500, detail="Failed to generate content from Gemini")
+        raise HTTPException(status_code=500, detail="Failed to generate content")
 
 @app.get("/mistakes")
 def get_mistakes():
