@@ -29,7 +29,7 @@ if not google_api_key:
 else:
     genai.configure(api_key=google_api_key)
 
-model = genai.GenerativeModel('models/gemini-1.5-flash')
+model = genai.GenerativeModel('gemini-pro')
 
 # --- Mistake Tracking Logic ---
 BASE_DIR = Path(__file__).resolve().parent
